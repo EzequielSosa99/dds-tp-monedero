@@ -6,6 +6,7 @@ import dds.monedero.exceptions.SaldoMenorException;
 import java.time.LocalDate;
 
 public class ValidadorExtraccion {
+  private static final double LIMITE_DIARIO = 1000;
 
   public void validar(Cuenta cuenta, double cuanto, LocalDate fecha) {
     if (cuenta.getSaldo() < cuanto) {
@@ -13,10 +14,10 @@ public class ValidadorExtraccion {
     }
 
     double extraidoHoy = cuenta.getMontoExtraidoA(fecha);
-    double disponible = 1000 - extraidoHoy;
+    double disponible = LIMITE_DIARIO  - extraidoHoy;
 
     if (cuanto > disponible) {
-      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + 1000 + " diarios, " + "límite: " + disponible);
+      throw new MaximoExtraccionDiarioException("No puede extraer mas de $ " + LIMITE_DIARIO + " diarios, " + "límite: " + disponible);
     }
   }
 }
