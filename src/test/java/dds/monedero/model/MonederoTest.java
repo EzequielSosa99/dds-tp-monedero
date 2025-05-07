@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MonederoTest {
   private Cuenta cuenta;
@@ -73,4 +75,34 @@ public class MonederoTest {
     assertThrows(MontoNegativoException.class, () -> cuenta.sacar(-500));
   }
 
+  @Test
+  @DisplayName("El saldo se actualiza correctamente luego de un depósito")
+  void SaldoSeActualizaConDeposito() {
+    cuenta.poner(1000);
+    assertEquals(1000, cuenta.getSaldo());
+  }
+
+  @Test
+  @DisplayName("El saldo se actualiza correctamente luego de una extracción")
+  void SaldoSeActualizaConExtraccion() {
+    cuenta.setSaldo(1500);
+    cuenta.sacar(500);
+    assertEquals(1000, cuenta.getSaldo());
+  }
+
+  @Test
+  @DisplayName("Se registra una transacción de tipo depósito")
+  void SeRegistraTransaccionDeposito() {
+    cuenta.poner(700);
+    assertTrue(cuenta.getMovimientos().get(0).isDeposito());
+  }
+
+  @Test
+  @DisplayName("Es posible extraer en dos operaciones sin superar el límite diario")
+  void ExtraccionesParcialesValidas() {
+    cuenta.setSaldo(2000);
+    cuenta.sacar(400);
+    cuenta.sacar(500); // Total = 900, aún dentro del límite de 1000
+    assertEquals(1100, cuenta.getSaldo());
+  }
 }
